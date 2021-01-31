@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using SubjectNerd.Utilities;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class BaseView<T> : MonoBehaviour where T : BaseViewModel
 {
     public T ViewModel { get; protected set; }
-    /*[SerializeField]*/ public DataBindInfo[] dataBindConfigs;
-    /*[SerializeField]*/ public EventBindInfo[] eventBindConfigs;
+    [SerializeField] [Reorderable]public DataBindInfo[] dataBindConfigs;
+    [SerializeField][Reorderable] public EventBindInfo[] eventBindConfigs;
 
     DataBindingConnection[] _data_connections;
     EventBindingConnection[] _event_connections;
