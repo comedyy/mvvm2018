@@ -175,8 +175,13 @@ public static class EditorPropertyCache
             return new List<string>();
         }
 
+        bool exist = GetArgumentByComponentEvent(componentType, out Type argType);
+        if (!exist)
+        {
+            return new List<string>();
+        }
+
         List<string> lstRet = new List<string>();
-        Type argType = GetArgumentByComponentEvent(componentType);
         foreach (var item in lstMethods)
         {
             var ts = item.GetParameters();
@@ -204,17 +209,24 @@ public static class EditorPropertyCache
         return lstRet;
     }
 
-    private static Type GetArgumentByComponentEvent(Type componentType)
+    private static bool GetArgumentByComponentEvent(Type componentType, out Type type)
     {
+        type = typeof(void);
         if (componentType == typeof(Slider))
         {
-            return typeof(float);
+            type = typeof(float);
+            return true;
         }
         else if (componentType == typeof(Toggle))
         {
-            return typeof(bool);
+            type = typeof(bool);
+            return true;
+        }
+        else if (componentType == typeof(Button))
+        {
+            return true;
         }
         
-        return typeof(void);
+        return false;
     }
 }

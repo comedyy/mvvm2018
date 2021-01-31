@@ -11,15 +11,23 @@ public class EventBindInfoDrawer : PropertyDrawer
 {
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
+        DataBindInfoDrawer.InitErrorStyle();
+
         EditorGUI.BeginProperty(position, label, property);
 
         EventBindInfo bindingInfo = property.GetSerializedValue<EventBindInfo>();
         if(bindingInfo == null) return;
 
         string title = bindingInfo.component == null ? "NULL" : bindingInfo.component.ToString();
+
+        bool error = bindingInfo.component == null
+            || string.IsNullOrEmpty(bindingInfo.invokeFunctionName);
+
+        GUIStyle style = error ? DataBindInfoDrawer.errorStyle : EditorStyles.foldout;
         GUIContent titleContent = new GUIContent(title);
-       
-        property.isExpanded = EditorGUI.Foldout(new Rect(position.position, new Vector2(position.width, 20)), property.isExpanded, titleContent, true);
+        
+        property.isExpanded = EditorGUI.Foldout(new Rect(position.position, new Vector2(position.width, 20)), 
+            property.isExpanded, titleContent, true, style);
 
         if (property.isExpanded)
         {
@@ -29,6 +37,7 @@ public class EventBindInfoDrawer : PropertyDrawer
             EditorGUI.PropertyField(amountRect, property.FindPropertyRelative("component"), GUIContent.none);
             if (bindingInfo.component != null)
             {
+                Debug.LogError(bindingInfo.invokeFunctionName);
                 SerializedObject o = property.serializedObject;
                 Type tO = o.targetObject.GetType();
                 PropertyInfo viewModelProperty = tO.GetProperty("ViewModel", BindingFlags.Public | BindingFlags.Instance);
@@ -39,9 +48,14 @@ public class EventBindInfoDrawer : PropertyDrawer
                 if (propertyList.Count > 0)
                 {
                     int index = propertyList.IndexOf(propertyProperty.stringValue);
-                    index = EditorGUI.Popup(unitRect, index, propertyList.ToArray());
                     index = Mathf.Max(0, index);
+                    index = EditorGUI.Popup(unitRect, index, propertyList.ToArray());
                     propertyProperty.stringValue = propertyList[index];
+                }
+                else
+                {
+                    propertyProperty.stringValue = "";
+                    o.ApplyModifiedProperties();
                 }
             }
         }
