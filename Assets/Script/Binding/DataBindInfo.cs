@@ -8,18 +8,11 @@ public enum DataFrom
     MultiLanguage       // 多语言
 }
 
-public enum ParameterType 
-{
-    INT,
-    STR,
-    FLOAT,
-    BOOL
-}
-
+[Serializable]
 public class BindingParameter 
 {
     public DataFrom dataFrom;
-    public ParameterType paramType;
+    public string paramType;
     public string paramStr;
     public int paramInt;
 }

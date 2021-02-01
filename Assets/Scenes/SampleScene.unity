@@ -1032,15 +1032,19 @@ MonoBehaviour:
     - component: {fileID: 739853337}
       invokeFunctionName: SetImage
       propertyName: FruitPath
+      parameters: []
     - component: {fileID: 908014409}
       invokeFunctionName: SetText
       propertyName: FruitName
+      parameters: []
     - component: {fileID: 1700558083}
       invokeFunctionName: SetText
       propertyName: Count
+      parameters: []
     - component: {fileID: 213692385}
       invokeFunctionName: SetText
       propertyName: Price
+      parameters: []
     eventBindConfigs:
     - component: {fileID: 1257463619}
       className: 
@@ -3096,18 +3100,27 @@ MonoBehaviour:
     - component: {fileID: 1952261076}
       invokeFunctionName: SetText
       propertyName: Total
+      parameters: []
     - component: {fileID: 1995288747}
       invokeFunctionName: SetToggle
       propertyName: ShoppingBag
+      parameters: []
     - component: {fileID: 142962797}
       invokeFunctionName: SetList
       propertyName: BuyInfoList
+      parameters: []
     - component: {fileID: 1886358528}
       invokeFunctionName: SetSlider
       propertyName: Discount
+      parameters: []
     - component: {fileID: 1704504995}
-      invokeFunctionName: SetText
+      invokeFunctionName: SetTextWithFormation
       propertyName: Discount
+      parameters:
+      - dataFrom: 1
+        paramType: System.String
+        paramStr: '{0}%'
+        paramInt: 0
     eventBindConfigs:
     - component: {fileID: 1738564968}
       className: 

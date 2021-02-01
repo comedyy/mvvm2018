@@ -11,6 +11,8 @@ public class DataBindInfoDrawer : PropertyDrawer
 {
     public static GUIStyle errorStyle;
     static List<string> lstTemp = new List<string>();
+    static string[] dataFrom = new string[] { "VM", "Custom", "Language"};
+
     public static void InitErrorStyle(){
         if (errorStyle != null)
         {
@@ -100,42 +102,66 @@ public class DataBindInfoDrawer : PropertyDrawer
                 propertyProperty.stringValue = "";
             }
 
-            //int paramCount = GetParameterCount(property, out List<Type> lst);
-            //if (paramCount > 2)
-            //{
-            //    SerializedProperty parameterProperty = property.FindPropertyRelative("parameters");
-            //    parameterProperty.arraySize = paramCount - 2;
-            //    for (int i = 0; i < parameterProperty.arraySize; i++)
-            //    {
-            //        var rect = new Rect(position.x, position.y + 80 + i* 20, 50, 20);
-            //        var rectDetail = new Rect(position.x, position.y + 80 + i* 20, position.width - 50, 20);
+            ReflectionMethodItem item = GetMethod(property);
+            if (item.parameters.Length > 2)
+            {
+                SerializedProperty parameterProperty = property.FindPropertyRelative("parameters");
+                parameterProperty.arraySize = item.parameters.Length - 2;
+                for (int i = 0; i < parameterProperty.arraySize; i++)
+                {
+                    var rect = new Rect(position.x, position.y + 80 + i * 20, 50, 20);
+                    var rectDetail = new Rect(position.x + 50, position.y + 80 + i * 20, position.width - 50, 20);
+                    Type parameterType = item.parameters[i + 2];
 
-            //        SerializedProperty parameter =  parameterProperty.GetArrayElementAtIndex(i);
-            //        SerializedProperty dataFromProperty = parameter.FindPropertyRelative("dataFrom");
-            //        SerializedProperty paramTypeProperty = parameter.FindPropertyRelative("paramType");
-            //        SerializedProperty stringParamProperty = parameter.FindPropertyRelative("paramStr");
-            //        SerializedProperty intParamProperty = parameter.FindPropertyRelative("paramInt");
+                    SerializedProperty parameter = parameterProperty.GetArrayElementAtIndex(i);
+                    SerializedProperty dataFromProperty = parameter.FindPropertyRelative("dataFrom");
+                    SerializedProperty paramTypeProperty = parameter.FindPropertyRelative("paramType");
+                    SerializedProperty stringParamProperty = parameter.FindPropertyRelative("paramStr");
+                    paramTypeProperty.stringValue = parameterType.ToString();
 
-            //        index = EditorGUI.Popup(nameRect, dataFromProperty.intValue, propertyList.ToArray());
-            //        if (index == (int)DataFrom.VM)
-            //        {
-            //            propertyList = EditorPropertyCache.GetPropertys(typeModel, bindingInfo.component.GetType(), null);
-            //            if (propertyList.Count > 0)
-            //            {
-            //                index = propertyList.IndexOf(stringParamProperty.stringValue);
-            //                index = Mathf.Max(0, index);
-            //                index = EditorGUI.Popup(nameRect, index, propertyList.ToArray());
-            //                stringParamProperty.stringValue = propertyList[index];
-            //            }
-            //        }
-            //        else if (index == (int)DataFrom.Custom)
-            //        {
+                    dataFromProperty.intValue = EditorGUI.Popup(rect, dataFromProperty.intValue, dataFrom.ToArray());
+                    if (dataFromProperty.intValue == (int)DataFrom.VM)
+                    {
+                        lstTemp.Clear();
+                        ReflectionTool.GetVmPropertyByType(vmType, parameterType, lstTemp);
 
-            //        }
+                        if (lstTemp.Count > 0)
+                        {
+                            index = lstTemp.IndexOf(stringParamProperty.stringValue);
+                            index = Mathf.Max(0, index);
+                            index = EditorGUI.Popup(rectDetail, index, lstTemp.ToArray());
+                            stringParamProperty.stringValue = lstTemp[index];
+                        }
+                    }
+                    else if (dataFromProperty.intValue == (int)DataFrom.Custom)
+                    {
+                        if (parameterType == typeof(string))
+                        {
+                            stringParamProperty.stringValue = EditorGUI.TextField(rectDetail, stringParamProperty.stringValue);
+                        }
+                        else 
+                        {
+                            object x = Convert.ChangeType(stringParamProperty.stringValue, parameterType);
+                            if (parameterType == typeof(int))
+                            {
+                                x = EditorGUI.IntField(rectDetail, (int)x);
+                            }
+                            else if (parameterType == typeof(bool))
+                            {
+                                x = EditorGUI.Toggle(rectDetail, (bool)x);
+                            }
+                            else if (parameterType == typeof(float))
+                            {
+                                x = EditorGUI.FloatField(rectDetail, (float)x);
+                            }
+                            stringParamProperty.stringValue = (string)Convert.ChangeType(x, typeof(string));
+                        }
+                    }
 
-            //        EditorGUI.PropertyField(rect, dataFromProperty, GUIContent.none);
-            //    }
-            //}
+                    EditorGUI.PropertyField(rect, dataFromProperty, GUIContent.none);
+                }
+            }
+
 
             o.ApplyModifiedProperties();
         }
@@ -147,44 +173,37 @@ public class DataBindInfoDrawer : PropertyDrawer
     {
         if (property.isExpanded)
         {
-            int parameterCount = GetParameterCount(property, out List<Type> lst);
-            if (parameterCount == 0)
+            ReflectionMethodItem item = GetMethod(property);
+            if (item == null)
             {
                 return 60;
             }
 
-            return parameterCount * 20 + 40;
+            return item.parameters.Length * 20 + 40;
         }
 
         return 20;
     }
 
-    int GetParameterCount(SerializedProperty property, out List<Type> parameters) 
+    ReflectionMethodItem GetMethod(SerializedProperty property) 
     {
-        parameters = new List<Type>();
         DataBindInfo bindingInfo = property.GetSerializedValue<DataBindInfo>();
         if (bindingInfo == null)
         {
-            return 0;
+            return null;
         }
 
-        if (bindingInfo.component == null || string.IsNullOrEmpty(bindingInfo.invokeFunctionName))
+        Type tO = property.serializedObject.targetObject.GetType();
+        FieldInfo viewModelProperty = tO.GetField("ViewModel", BindingFlags.NonPublic | BindingFlags.Instance);
+        Type vmType = viewModelProperty.FieldType;
+        PropertyInfo propertyInfo = vmType.GetProperty(bindingInfo.propertyName);
+        if (propertyInfo == null)
         {
-            return 0;
+            return null;
         }
 
-        List<MethodInfo> lstInfo = EditorPropertyCache.GetMethodInfo(bindingInfo.component.GetType(), bindingInfo.invokeFunctionName);
-        if (lstInfo.Count == 0)
-        {
-            return 0;
-        }
-
-        ParameterInfo[] ps = lstInfo[0].GetParameters();
-        foreach (var item in ps)
-        {
-            parameters.Add(item.ParameterType);
-        }
-        return ps.Length;
+        ReflectionMethodItem item = ReflectionTool.GetComponentMethod(bindingInfo.component.GetType(), bindingInfo.invokeFunctionName, propertyInfo.PropertyType);
+        return item;
     }
 }
 
