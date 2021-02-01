@@ -3098,9 +3098,12 @@ MonoBehaviour:
   _combineInstance:
     dataBindConfigs:
     - component: {fileID: 1952261076}
-      invokeFunctionName: SetText
-      propertyName: Total
-      parameters: []
+      invokeFunctionName: SetTextWithRed
+      propertyName: VipIcon
+      parameters:
+      - dataFrom: 0
+        paramType: System.Boolean
+        paramStr: ShoppingBag
     - component: {fileID: 1995288747}
       invokeFunctionName: SetToggle
       propertyName: ShoppingBag
@@ -3120,7 +3123,6 @@ MonoBehaviour:
       - dataFrom: 1
         paramType: System.String
         paramStr: '{0}%'
-        paramInt: 0
     eventBindConfigs:
     - component: {fileID: 1738564968}
       className: 

@@ -103,7 +103,7 @@ public class DataBindInfoDrawer : PropertyDrawer
             }
 
             ReflectionMethodItem item = GetMethod(property);
-            if (item.parameters.Length > 2)
+            if (item != null && item.parameters.Length > 2)
             {
                 SerializedProperty parameterProperty = property.FindPropertyRelative("parameters");
                 parameterProperty.arraySize = item.parameters.Length - 2;
@@ -141,7 +141,16 @@ public class DataBindInfoDrawer : PropertyDrawer
                         }
                         else 
                         {
-                            object x = Convert.ChangeType(stringParamProperty.stringValue, parameterType);
+                            object x = null;
+                            try
+                            {
+                                x= Convert.ChangeType(stringParamProperty.stringValue, parameterType);;
+                            }
+                            catch (System.Exception)
+                            {
+                                x = GetDefault(parameterType);
+                            }
+                            
                             if (parameterType == typeof(int))
                             {
                                 x = EditorGUI.IntField(rectDetail, (int)x);
@@ -204,6 +213,15 @@ public class DataBindInfoDrawer : PropertyDrawer
 
         ReflectionMethodItem item = ReflectionTool.GetComponentMethod(bindingInfo.component.GetType(), bindingInfo.invokeFunctionName, propertyInfo.PropertyType);
         return item;
+    }
+
+    public static object GetDefault(Type type)
+    {
+    if(type.IsValueType)
+    {
+        return Activator.CreateInstance(type);
+    }
+    return null;
     }
 }
 

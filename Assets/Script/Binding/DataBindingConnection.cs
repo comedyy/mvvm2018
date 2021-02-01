@@ -1,6 +1,33 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+
+class BindingParameterInfo
+{
+    PropertyInfo propertyInfo;
+    object constValue;
+    BaseViewModel model;
+
+    public BindingParameterInfo(BindingParameter paramter, BaseViewModel model)
+    {
+        this.model = model;
+        if (paramter.dataFrom == DataFrom.VM)
+        {
+            propertyInfo = ReflectionTool.GetVmPropertyByName(model.GetType(), paramter.paramStr);
+        }
+        else
+        {
+            Type t = Type.GetType(paramter.paramType);
+            constValue = Convert.ChangeType(paramter.paramStr, t);
+        }
+    }
+
+    public object GetValue()
+    {
+        return propertyInfo != null ? propertyInfo.GetValue(model) : constValue;
+    }
+}
 
 internal class DataBindingConnection
 {
@@ -9,6 +36,9 @@ internal class DataBindingConnection
 
     PropertyInfo _getProperty;
     MethodInfo _invokeMethod;
+
+    List<BindingParameterInfo> _lstParameter = new List<BindingParameterInfo>();
+    object[] ps;
 
     public DataBindingConnection(BaseViewModel viewModel, DataBindInfo dataBindInfo)
     {
@@ -29,6 +59,14 @@ internal class DataBindingConnection
         }
 
         _invokeMethod = item.methodInfo;
+
+        foreach (var bindingParameter in dataBindInfo.parameters)
+        {
+            _lstParameter.Add(new BindingParameterInfo(bindingParameter, viewModel));
+        }
+
+        ps = new object[dataBindInfo.parameters.Length + 2];
+        ps[0] = dataBindInfo.component;
     }
 
     void OnChange(string changedProperty) 
@@ -39,7 +77,13 @@ internal class DataBindingConnection
         }
 
         object data = _getProperty.GetValue(viewModel);
-        _invokeMethod.Invoke(null, new object[] { dataBindInfo.component, data});
+        ps[1] = data;
+        for (int i = 0; i < _lstParameter.Count; i++)
+        {
+            ps[2 + i] = _lstParameter[i].GetValue();
+        }
+
+        _invokeMethod.Invoke(null,  ps);
     }
 
     internal void Bind()

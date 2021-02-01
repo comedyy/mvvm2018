@@ -72,6 +72,17 @@ public static class UIBindingFunctions
         text.text = string.Format(format, value);
     }
 
+    public static void SetTextWithRed(Text text, int value, bool red, int Y)
+    {
+        if (text == null)
+        {
+            Debug.LogError("SetText Error, Text Null");
+            return;
+        }
+
+        text.text = value.ToString();
+        text.color = red ? Color.red : Color.white;
+    }
 
     public static void SetToggle(Toggle toggle, bool value) 
     {

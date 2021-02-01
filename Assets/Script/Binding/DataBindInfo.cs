@@ -14,7 +14,6 @@ public class BindingParameter
     public DataFrom dataFrom;
     public string paramType;
     public string paramStr;
-    public int paramInt;
 }
 
 [Serializable]
