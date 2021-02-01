@@ -6,7 +6,18 @@ using UnityEngine.UI;
 
 public static class UIBindingFunctions
 {
-    public static void SetText<T>(Text text, T value) where T : struct
+    public static void SetText(Text text, float value)
+    {
+        if (text == null)
+        {
+            Debug.LogError("SetText Error, Text Null");
+            return;
+        }
+
+        text.text = ((int)value).ToString();
+    }
+
+    public static void SetText(Text text, int value)
     {
         if (text == null)
         {
@@ -17,7 +28,7 @@ public static class UIBindingFunctions
         text.text = value.ToString();
     }
 
-    public static void SetTextString(Text text, string value) 
+    public static void SetText(Text text, string value) 
     {
         if (text == null)
         {
@@ -27,6 +38,40 @@ public static class UIBindingFunctions
 
         text.text = value;
     }
+
+    public static void SetTextWithFormation(Text text, string value, string format)
+    {
+        if (text == null)
+        {
+            Debug.LogError("SetText Error, Text Null");
+            return;
+        }
+
+        text.text = string.Format(format, value);
+    }
+
+    public static void SetTextWithFormation(Text text, float value, string format)
+    {
+        if (text == null)
+        {
+            Debug.LogError("SetText Error, Text Null");
+            return;
+        }
+
+        text.text = string.Format(format, value);
+    }
+
+    public static void SetTextWithFormation(Text text, int value, string format)
+    {
+        if (text == null)
+        {
+            Debug.LogError("SetText Error, Text Null");
+            return;
+        }
+
+        text.text = string.Format(format, value);
+    }
+
 
     public static void SetToggle(Toggle toggle, bool value) 
     {

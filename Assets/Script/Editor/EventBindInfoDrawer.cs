@@ -5,10 +5,13 @@ using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 [CustomPropertyDrawer(typeof(EventBindInfo))]
 public class EventBindInfoDrawer : PropertyDrawer
 {
+    static List<string> lstTemp = new List<string>();
+
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
         DataBindInfoDrawer.InitErrorStyle();
@@ -40,16 +43,20 @@ public class EventBindInfoDrawer : PropertyDrawer
                 SerializedObject o = property.serializedObject;
                 Type tO = o.targetObject.GetType();
                 FieldInfo viewModelProperty = tO.GetField("ViewModel", BindingFlags.NonPublic | BindingFlags.Instance);
-                string typeModel = viewModelProperty.FieldType.Name;
+                Type vmType = viewModelProperty.FieldType;
                 SerializedProperty propertyProperty = property.FindPropertyRelative("invokeFunctionName");
-                List<string> propertyList = EditorPropertyCache.GetMethodAndPropertys(typeModel, bindingInfo.component.GetType());
 
-                if (propertyList.Count > 0)
+                GetArgumentByComponentEvent(bindingInfo.component.GetType(), out Type argType);
+                lstTemp.Clear();
+                ReflectionTool.GetVmMethodByParameter1Type(vmType, argType, lstTemp);
+                ReflectionTool.GetVmPropertyByType(vmType, argType, lstTemp);
+
+                if (lstTemp.Count > 0)
                 {
-                    int index = propertyList.IndexOf(propertyProperty.stringValue);
+                    int index = lstTemp.IndexOf(propertyProperty.stringValue);
                     index = Mathf.Max(0, index);
-                    index = EditorGUI.Popup(unitRect, index, propertyList.ToArray());
-                    propertyProperty.stringValue = propertyList[index];
+                    index = EditorGUI.Popup(unitRect, index, lstTemp.ToArray());
+                    propertyProperty.stringValue = lstTemp[index];
                 }
                 else
                 {
@@ -71,6 +78,27 @@ public class EventBindInfoDrawer : PropertyDrawer
         }
 
         return 20;
+    }
+
+    private static bool GetArgumentByComponentEvent(Type componentType, out Type type)
+    {
+        type = typeof(void);
+        if (componentType == typeof(Slider))
+        {
+            type = typeof(float);
+            return true;
+        }
+        else if (componentType == typeof(Toggle))
+        {
+            type = typeof(bool);
+            return true;
+        }
+        else if (componentType == typeof(Button))
+        {
+            return true;
+        }
+
+        return false;
     }
 }
 

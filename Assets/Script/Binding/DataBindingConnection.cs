@@ -15,22 +15,20 @@ internal class DataBindingConnection
         this.dataBindInfo = dataBindInfo;
         this.viewModel = viewModel;
 
-        _getProperty = viewModel.GetType().GetProperty(dataBindInfo.propertyName, BindingFlags.Instance | BindingFlags.Public);
+
+        _getProperty = ReflectionTool.GetVmPropertyByName(viewModel.GetType(), dataBindInfo.propertyName);
         if (_getProperty == null)
         {
             Debug.LogErrorFormat("get property null {0}:{1}", viewModel.GetType(), dataBindInfo.propertyName);
         }
-
-        _invokeMethod = typeof(UIBindingFunctions).GetMethod(dataBindInfo.invokeFunctionName, BindingFlags.Public | BindingFlags.Static);
-        if (_invokeMethod == null)
+     
+        ReflectionMethodItem item = ReflectionTool.GetComponentMethod(dataBindInfo.component.GetType(), dataBindInfo.invokeFunctionName, _getProperty.PropertyType);
+        if (item == null)
         {
             Debug.LogErrorFormat("get invokeMethod null {0}", dataBindInfo.invokeFunctionName);
         }
 
-        if (_invokeMethod.IsGenericMethod)
-        {
-            _invokeMethod = _invokeMethod.MakeGenericMethod(new Type[] { _getProperty.PropertyType });
-        }
+        _invokeMethod = item.methodInfo;
     }
 
     void OnChange(string changedProperty) 

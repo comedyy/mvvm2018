@@ -10,6 +10,7 @@ using UnityEngine;
 public class DataBindInfoDrawer : PropertyDrawer
 {
     public static GUIStyle errorStyle;
+    static List<string> lstTemp = new List<string>();
     public static void InitErrorStyle(){
         if (errorStyle != null)
         {
@@ -51,6 +52,7 @@ public class DataBindInfoDrawer : PropertyDrawer
         property.isExpanded = EditorGUI.Foldout(new Rect(position.position, new Vector2(position.width, 20)),
              property.isExpanded, titleContent, true, style);
 
+
         if (property.isExpanded)
         {
             var amountRect = new Rect(position.x, position.y + 20, position.width, 20);
@@ -59,17 +61,19 @@ public class DataBindInfoDrawer : PropertyDrawer
 
             EditorGUI.PropertyField(amountRect, property.FindPropertyRelative("component"), GUIContent.none);
 
-            SerializedProperty methodMethod = property.FindPropertyRelative("invokeFunctionName");
-            List<string> methodList = EditorPropertyCache.GetComponentOpts(bindingInfo.component.GetType());
             SerializedObject o = property.serializedObject;
+            SerializedProperty methodMethod = property.FindPropertyRelative("invokeFunctionName");
+
+            lstTemp.Clear();
+            ReflectionTool.GetComponentMethods(bindingInfo.component.GetType(), lstTemp);
 
             int index;
-            if (methodList.Count > 0)
+            if (lstTemp.Count > 0)
             {
-                index = methodList.IndexOf(methodMethod.stringValue);
+                index = lstTemp.IndexOf(methodMethod.stringValue);
                 index = Mathf.Max(0, index);
-                index = EditorGUI.Popup(unitRect, index, methodList.ToArray());
-                methodMethod.stringValue = methodList[index];
+                index = EditorGUI.Popup(unitRect, index, lstTemp.ToArray());
+                methodMethod.stringValue = lstTemp[index];
             }
             else
             {
@@ -78,21 +82,60 @@ public class DataBindInfoDrawer : PropertyDrawer
 
             Type tO = o.targetObject.GetType();
             FieldInfo viewModelProperty = tO.GetField("ViewModel", BindingFlags.NonPublic | BindingFlags.Instance);
-            string typeModel = viewModelProperty.FieldType.Name;
-            SerializedProperty propertyProperty = property.FindPropertyRelative("propertyName");
-            List<string> propertyList = EditorPropertyCache.GetPropertys(typeModel, bindingInfo.component.GetType(), methodMethod.stringValue);
+            Type vmType = viewModelProperty.FieldType;
 
-            if (propertyList.Count > 0)
+            lstTemp.Clear();
+            ReflectionTool.GetVmPropertysByMethod(vmType, bindingInfo.component.GetType(), methodMethod.stringValue, lstTemp);
+
+            SerializedProperty propertyProperty = property.FindPropertyRelative("propertyName");
+            if (lstTemp.Count > 0)
             {
-                index = propertyList.IndexOf(propertyProperty.stringValue);
+                index = lstTemp.IndexOf(propertyProperty.stringValue);
                 index = Mathf.Max(0, index);
-                index = EditorGUI.Popup(nameRect, index, propertyList.ToArray());
-                propertyProperty.stringValue = propertyList[index];
+                index = EditorGUI.Popup(nameRect, index, lstTemp.ToArray());
+                propertyProperty.stringValue = lstTemp[index];
             }
             else
             {
                 propertyProperty.stringValue = "";
             }
+
+            //int paramCount = GetParameterCount(property, out List<Type> lst);
+            //if (paramCount > 2)
+            //{
+            //    SerializedProperty parameterProperty = property.FindPropertyRelative("parameters");
+            //    parameterProperty.arraySize = paramCount - 2;
+            //    for (int i = 0; i < parameterProperty.arraySize; i++)
+            //    {
+            //        var rect = new Rect(position.x, position.y + 80 + i* 20, 50, 20);
+            //        var rectDetail = new Rect(position.x, position.y + 80 + i* 20, position.width - 50, 20);
+
+            //        SerializedProperty parameter =  parameterProperty.GetArrayElementAtIndex(i);
+            //        SerializedProperty dataFromProperty = parameter.FindPropertyRelative("dataFrom");
+            //        SerializedProperty paramTypeProperty = parameter.FindPropertyRelative("paramType");
+            //        SerializedProperty stringParamProperty = parameter.FindPropertyRelative("paramStr");
+            //        SerializedProperty intParamProperty = parameter.FindPropertyRelative("paramInt");
+
+            //        index = EditorGUI.Popup(nameRect, dataFromProperty.intValue, propertyList.ToArray());
+            //        if (index == (int)DataFrom.VM)
+            //        {
+            //            propertyList = EditorPropertyCache.GetPropertys(typeModel, bindingInfo.component.GetType(), null);
+            //            if (propertyList.Count > 0)
+            //            {
+            //                index = propertyList.IndexOf(stringParamProperty.stringValue);
+            //                index = Mathf.Max(0, index);
+            //                index = EditorGUI.Popup(nameRect, index, propertyList.ToArray());
+            //                stringParamProperty.stringValue = propertyList[index];
+            //            }
+            //        }
+            //        else if (index == (int)DataFrom.Custom)
+            //        {
+
+            //        }
+
+            //        EditorGUI.PropertyField(rect, dataFromProperty, GUIContent.none);
+            //    }
+            //}
 
             o.ApplyModifiedProperties();
         }
@@ -104,10 +147,44 @@ public class DataBindInfoDrawer : PropertyDrawer
     {
         if (property.isExpanded)
         {
-            return 80;
+            int parameterCount = GetParameterCount(property, out List<Type> lst);
+            if (parameterCount == 0)
+            {
+                return 60;
+            }
+
+            return parameterCount * 20 + 40;
         }
 
         return 20;
+    }
+
+    int GetParameterCount(SerializedProperty property, out List<Type> parameters) 
+    {
+        parameters = new List<Type>();
+        DataBindInfo bindingInfo = property.GetSerializedValue<DataBindInfo>();
+        if (bindingInfo == null)
+        {
+            return 0;
+        }
+
+        if (bindingInfo.component == null || string.IsNullOrEmpty(bindingInfo.invokeFunctionName))
+        {
+            return 0;
+        }
+
+        List<MethodInfo> lstInfo = EditorPropertyCache.GetMethodInfo(bindingInfo.component.GetType(), bindingInfo.invokeFunctionName);
+        if (lstInfo.Count == 0)
+        {
+            return 0;
+        }
+
+        ParameterInfo[] ps = lstInfo[0].GetParameters();
+        foreach (var item in ps)
+        {
+            parameters.Add(item.ParameterType);
+        }
+        return ps.Length;
     }
 }
 

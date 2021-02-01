@@ -31,4 +31,14 @@ public class ToggleEventBindingConnection : EventBindingConnection<Toggle>
     {
         Component.onValueChanged.RemoveListener(OnValueChange);
     }
+
+    protected override Type[] GetMethodParams()
+    {
+        return new Type[] { typeof(bool) };
+    }
+
+    protected override Type GetPropertyType()
+    {
+        return typeof(bool);
+    }
 }

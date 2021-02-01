@@ -323,7 +323,7 @@ namespace SubjectNerd.Utilities
 			if (isInitialized && FORCE_INIT == false)
 				return;
 
-			styleEditBox = new GUIStyle(EditorStyles.helpBox) { padding = new RectOffset(5, 5, 5, 5) };
+			styleEditBox = new GUIStyle();
 			FindTargetProperties();
 			FindContextMenu();
 		}

@@ -26,16 +26,33 @@ public abstract class EventBindingConnection
         this.eventBindInfo = eventBindInfo;
         this.viewModel = viewModel;
 
-        MemberInfo[] infos = viewModel.GetType().GetMember(eventBindInfo.invokeFunctionName, BindingFlags.Public | BindingFlags.Instance);
-        if (infos == null || infos.Length == 0)
+        _invokeMethod = ReflectionTool.GetVmMethod(viewModel.GetType(), eventBindInfo.invokeFunctionName, GetMethodParams());
+        if (_invokeMethod == null)
+        {
+            PropertyInfo info = ReflectionTool.GetVmPropertyByName(viewModel.GetType(), eventBindInfo.invokeFunctionName);
+            if (info != null )
+            {
+                if (info.PropertyType != GetPropertyType())
+                {
+                    Debug.LogErrorFormat("get invokeMethod null {0}", eventBindInfo.invokeFunctionName);
+                }
+                else 
+                {
+                    _invokeMethod = info;
+                }
+            }
+        }
+
+        if (_invokeMethod == null)
         {
             Debug.LogErrorFormat("get invokeMethod null {0}", eventBindInfo.invokeFunctionName);
             return;
         }
-
-        _invokeMethod = infos[0];
     }
 
     public abstract void Bind();
     public abstract void UnBind();
+
+    protected abstract Type[] GetMethodParams();
+    protected abstract Type GetPropertyType();
 }

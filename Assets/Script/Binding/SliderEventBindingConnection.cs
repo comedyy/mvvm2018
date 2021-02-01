@@ -31,4 +31,14 @@ public class SliderEventBindingConnection : EventBindingConnection<Slider>
     {
         Component.onValueChanged.RemoveListener(OnValueChange);
     }
+
+    protected override Type[] GetMethodParams()
+    {
+        return new Type[] { typeof(float)};
+    }
+
+    protected override Type GetPropertyType()
+    {
+        return typeof(float);
+    }
 }

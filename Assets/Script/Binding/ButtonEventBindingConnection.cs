@@ -25,4 +25,14 @@ public class ButtonEventBindingConnection : EventBindingConnection<Button>
     {
         Component.onClick.RemoveListener(OnClick);
     }
+
+    protected override Type[] GetMethodParams()
+    {
+        return new Type[0];
+    }
+
+    protected override Type GetPropertyType()
+    {
+        return null;
+    }
 }

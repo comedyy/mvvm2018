@@ -1033,7 +1033,7 @@ MonoBehaviour:
       invokeFunctionName: SetImage
       propertyName: FruitPath
     - component: {fileID: 908014409}
-      invokeFunctionName: SetTextString
+      invokeFunctionName: SetText
       propertyName: FruitName
     - component: {fileID: 1700558083}
       invokeFunctionName: SetText
