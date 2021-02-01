@@ -39,8 +39,8 @@ public class EventBindInfoDrawer : PropertyDrawer
             {
                 SerializedObject o = property.serializedObject;
                 Type tO = o.targetObject.GetType();
-                PropertyInfo viewModelProperty = tO.GetProperty("ViewModel", BindingFlags.Public | BindingFlags.Instance);
-                string typeModel = viewModelProperty.PropertyType.Name;
+                FieldInfo viewModelProperty = tO.GetField("ViewModel", BindingFlags.NonPublic | BindingFlags.Instance);
+                string typeModel = viewModelProperty.FieldType.Name;
                 SerializedProperty propertyProperty = property.FindPropertyRelative("invokeFunctionName");
                 List<string> propertyList = EditorPropertyCache.GetMethodAndPropertys(typeModel, bindingInfo.component.GetType());
 
@@ -54,8 +54,9 @@ public class EventBindInfoDrawer : PropertyDrawer
                 else
                 {
                     propertyProperty.stringValue = "";
-                    o.ApplyModifiedProperties();
                 }
+
+                o.ApplyModifiedProperties();
             }
         }
 

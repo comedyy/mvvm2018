@@ -1,4 +1,6 @@
-﻿public enum Fruit
+﻿using System;
+
+public enum Fruit
 {
     Apple,
     Orange,

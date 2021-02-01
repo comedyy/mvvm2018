@@ -10,7 +10,6 @@ public class MyViewModel : BaseViewModel
     {
         shoppingBag = false;
         discount = 100;
-        lst.Add(new BuyInfo(Fruit.Apple, 1, this));
 
         RecalcTotal();
     }

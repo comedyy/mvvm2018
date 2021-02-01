@@ -53,7 +53,6 @@ public class DataBindInfoDrawer : PropertyDrawer
 
         if (property.isExpanded)
         {
-            Debug.Log(bindingInfo.invokeFunctionName);
             var amountRect = new Rect(position.x, position.y + 20, position.width, 20);
             var unitRect = new Rect(position.x, position.y + 40, position.width, 20);
             var nameRect = new Rect(position.x, position.y + 60, position.width, 20);
@@ -75,12 +74,11 @@ public class DataBindInfoDrawer : PropertyDrawer
             else
             {
                 methodMethod.stringValue = "";
-                o.ApplyModifiedProperties();
             }
 
             Type tO = o.targetObject.GetType();
-            PropertyInfo viewModelProperty = tO.GetProperty("ViewModel", BindingFlags.Public | BindingFlags.Instance);
-            string typeModel = viewModelProperty.PropertyType.Name;
+            FieldInfo viewModelProperty = tO.GetField("ViewModel", BindingFlags.NonPublic | BindingFlags.Instance);
+            string typeModel = viewModelProperty.FieldType.Name;
             SerializedProperty propertyProperty = property.FindPropertyRelative("propertyName");
             List<string> propertyList = EditorPropertyCache.GetPropertys(typeModel, bindingInfo.component.GetType(), methodMethod.stringValue);
 
@@ -94,8 +92,9 @@ public class DataBindInfoDrawer : PropertyDrawer
             else
             {
                 propertyProperty.stringValue = "";
-                o.ApplyModifiedProperties();
             }
+
+            o.ApplyModifiedProperties();
         }
 
         EditorGUI.EndProperty();

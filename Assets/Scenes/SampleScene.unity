@@ -1027,26 +1027,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97ea8af8ee6a8d046b763248dc743daf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dataBindConfigs:
-  - component: {fileID: 739853337}
-    invokeFunctionName: SetImage
-    propertyName: FruitPath
-  - component: {fileID: 908014409}
-    invokeFunctionName: SetTextString
-    propertyName: FruitName
-  - component: {fileID: 213692385}
-    invokeFunctionName: SetText
-    propertyName: Price
-  - component: {fileID: 1700558083}
-    invokeFunctionName: SetText
-    propertyName: Count
-  eventBindConfigs:
-  - component: {fileID: 1257463619}
-    className: 
-    invokeFunctionName: IncrCount
-  - component: {fileID: 4297788}
-    className: 
-    invokeFunctionName: DecrCount
+  _combineInstance:
+    dataBindConfigs:
+    - component: {fileID: 739853337}
+      invokeFunctionName: SetImage
+      propertyName: FruitPath
+    - component: {fileID: 908014409}
+      invokeFunctionName: SetTextString
+      propertyName: FruitName
+    - component: {fileID: 1700558083}
+      invokeFunctionName: SetText
+      propertyName: Count
+    - component: {fileID: 213692385}
+      invokeFunctionName: SetText
+      propertyName: Price
+    eventBindConfigs:
+    - component: {fileID: 1257463619}
+      className: 
+      invokeFunctionName: IncrCount
+    - component: {fileID: 4297788}
+      className: 
+      invokeFunctionName: DecrCount
 --- !u!1 &450402143
 GameObject:
   m_ObjectHideFlags: 0
@@ -3090,38 +3091,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cce800b2ae8a884588aa09756fae252, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dataBindConfigs:
-  - component: {fileID: 1952261076}
-    invokeFunctionName: SetText
-    propertyName: Total
-  - component: {fileID: 1995288747}
-    invokeFunctionName: SetToggle
-    propertyName: ShoppingBag
-  - component: {fileID: 142962797}
-    invokeFunctionName: SetList
-    propertyName: BuyInfoList
-  - component: {fileID: 1886358528}
-    invokeFunctionName: SetSlider
-    propertyName: Discount
-  - component: {fileID: 1704504995}
-    invokeFunctionName: SetText
-    propertyName: Discount
-  eventBindConfigs:
-  - component: {fileID: 1460767556}
-    className: 
-    invokeFunctionName: AddBananaToShopList
-  - component: {fileID: 1738564968}
-    className: 
-    invokeFunctionName: AddOrangeToShopList
-  - component: {fileID: 1995288747}
-    className: 
-    invokeFunctionName: ShoppingBag
-  - component: {fileID: 1609221421}
-    className: 
-    invokeFunctionName: AddAppleToShopList
-  - component: {fileID: 1886358528}
-    className: 
-    invokeFunctionName: Discount
+  _combineInstance:
+    dataBindConfigs:
+    - component: {fileID: 1952261076}
+      invokeFunctionName: SetText
+      propertyName: Total
+    - component: {fileID: 1995288747}
+      invokeFunctionName: SetToggle
+      propertyName: ShoppingBag
+    - component: {fileID: 142962797}
+      invokeFunctionName: SetList
+      propertyName: BuyInfoList
+    - component: {fileID: 1886358528}
+      invokeFunctionName: SetSlider
+      propertyName: Discount
+    - component: {fileID: 1704504995}
+      invokeFunctionName: SetText
+      propertyName: Discount
+    eventBindConfigs:
+    - component: {fileID: 1738564968}
+      className: 
+      invokeFunctionName: AddOrangeToShopList
+    - component: {fileID: 1460767556}
+      className: 
+      invokeFunctionName: AddBananaToShopList
+    - component: {fileID: 1609221421}
+      className: 
+      invokeFunctionName: AddAppleToShopList
+    - component: {fileID: 1886358528}
+      className: 
+      invokeFunctionName: Discount
+    - component: {fileID: 1995288747}
+      className: 
+      invokeFunctionName: ShoppingBag
 --- !u!1 &1886358526
 GameObject:
   m_ObjectHideFlags: 0
