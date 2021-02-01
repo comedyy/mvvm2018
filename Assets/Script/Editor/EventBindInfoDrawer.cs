@@ -37,7 +37,6 @@ public class EventBindInfoDrawer : PropertyDrawer
             EditorGUI.PropertyField(amountRect, property.FindPropertyRelative("component"), GUIContent.none);
             if (bindingInfo.component != null)
             {
-                Debug.LogError(bindingInfo.invokeFunctionName);
                 SerializedObject o = property.serializedObject;
                 Type tO = o.targetObject.GetType();
                 PropertyInfo viewModelProperty = tO.GetProperty("ViewModel", BindingFlags.Public | BindingFlags.Instance);

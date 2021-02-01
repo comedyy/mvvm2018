@@ -491,8 +491,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 38, y: -14}
-  m_SizeDelta: {x: 200, y: 200}
+  m_AnchoredPosition: {x: 38, y: 77}
+  m_SizeDelta: {x: 200, y: 400}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &142962794
 MonoBehaviour:
@@ -3109,10 +3109,10 @@ MonoBehaviour:
   eventBindConfigs:
   - component: {fileID: 1460767556}
     className: 
-    invokeFunctionName: AddAppleToShopList
+    invokeFunctionName: AddBananaToShopList
   - component: {fileID: 1738564968}
     className: 
-    invokeFunctionName: AddAppleToShopList
+    invokeFunctionName: AddOrangeToShopList
   - component: {fileID: 1995288747}
     className: 
     invokeFunctionName: ShoppingBag
